@@ -1,6 +1,7 @@
 use clap::Parser;
 use console::Term;
 use serde::Serialize;
+use std::process::exit;
 use strsim::levenshtein;
 use thiserror::Error;
 
@@ -89,6 +90,22 @@ impl Animal {
         }
     }
 
+    fn key(&self) -> &'static str {
+        match self {
+            Animal::SmallDog => "small_dog",
+            Animal::MediumDog => "medium_dog",
+            Animal::BigDog => "big_dog",
+            Animal::Cat => "cat",
+            Animal::Horse => "horse",
+            Animal::Pig => "pig",
+            Animal::Parakeet => "parakeet",
+            Animal::Snake => "snake",
+            Animal::Goldfish => "goldfish",
+            Animal::Rabbit => "rabbit",
+            Animal::Hamster => "hamster",
+        }
+    }
+
     fn description(&self) -> &'static str {
         match self {
             Animal::SmallDog => "Small dog (e.g., terrier)",
@@ -138,7 +155,25 @@ impl Animal {
     }
 }
 
-fn main() -> Result<(), AppError> {
+fn main() {
+    if let Err(err) = main_inner() {
+        if let AppError::UnknownAnimal(ref animal) = err {
+            if let Some(suggestion) = suggest_animal(animal) {
+                eprintln!(
+                    "Unknown animal type: {}. Did you mean '{}'?\nUse --list to view valid options.",
+                    animal, suggestion
+                );
+            } else {
+                eprintln!("Unknown animal type: {}\nUse --list to view valid options.", animal);
+            }
+        } else {
+            eprintln!("Error: {}", err);
+        }
+        exit(1);
+    }
+}
+
+fn main_inner() -> Result<(), AppError> {
     let args = Args::parse();
 
     if args.list {
@@ -155,21 +190,7 @@ fn main() -> Result<(), AppError> {
         return Err(AppError::InvalidAge("Age cannot be negative".to_string()));
     }
 
-    run_calc(animals.to_vec(), age, &args).map_err(|err| {
-        if let AppError::UnknownAnimal(ref animal) = err {
-            if let Some(suggestion) = suggest_animal(animal) {
-                eprintln!(
-                    "Unknown animal type: {}. Did you mean '{}'?\nUse --list to view valid options.",
-                    animal, suggestion
-                );
-            } else {
-                eprintln!("Unknown animal type: {}\nUse --list to view valid options.", animal);
-            }
-        } else {
-            eprintln!("Error: {}", err);
-        }
-        err
-    })?;
+    run_calc(animals.to_vec(), age, &args)?;
     Ok(())
 }
 
@@ -189,8 +210,7 @@ fn list_animals() {
         Animal::Hamster,
     ];
     for animal in animal_variants {
-        let key = format!("{:?}", animal).to_lowercase();
-        println!("  {:12} - {}", key, animal.description());
+        println!("  {:12} - {}", animal.key(), animal.description());
     }
 }
 
