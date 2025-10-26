@@ -1,6 +1,6 @@
 [package]
 name = "animal-age"
-version = "3.0.0"
+version = "1.0.0"
 edition = "2021"
 description = "CLI tool to convert animal ages to human years and show lifespan progress"
 authors = ["Frank Stallion Jr frank.stallion@ojefe.com"]
