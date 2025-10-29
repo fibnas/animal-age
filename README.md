@@ -2,6 +2,10 @@
 
 `animal-age` is a colorful Rust CLI that converts pet ages into their human-year equivalents, highlights lifespan progress, and outputs either terminal-friendly bars or machine-readable JSON.
 
+[![Crates.io](https://img.shields.io/crates/v/md-echo.svg)](https://crates.io/crates/animal-age)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Rust](https://img.shields.io/badge/Rust-stable-orange.svg)](https://www.rust-lang.org)
+
 ### Highlights
 - Converts 11 supported animal types (cat, several dog sizes, rabbit, etc.) with species-specific formulas.
 - Renders progress bars that compare the pet’s lifespan to an 80-year human baseline, with optional color suppression for plain terminals.
