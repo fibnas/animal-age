@@ -215,6 +215,15 @@ fn list_animals() {
 }
 
 fn run_calc(animals: Vec<String>, age: f32, args: &Args) -> Result<(), AppError> {
+    struct ResultRow {
+        display_label: String,
+        chart_label: String,
+        human_age: f32,
+        animal_max: f32,
+    }
+
+    let mut results = Vec::new();
+
     for animal_str in animals {
         let animal_lower = animal_str.to_lowercase();
         let animal_type = Animal::from_str(&animal_lower)
@@ -233,23 +242,84 @@ fn run_calc(animals: Vec<String>, age: f32, args: &Args) -> Result<(), AppError>
         if args.json {
             print_json(&animal_str, age, human_age, animal_max);
         } else {
-            println!(
-                "{} years old {} ≈ {:.1} human years\n",
-                age, animal_str, human_age
+            results.push(ResultRow {
+                display_label: animal_str,
+                chart_label: animal_type.key().to_string(),
+                human_age,
+                animal_max,
+            });
+        }
+    }
+
+    if args.json {
+        return Ok(());
+    }
+
+    for result in &results {
+        println!(
+            "{} years old {} ≈ {:.1} human years",
+            age, result.display_label, result.human_age
+        );
+    }
+
+    if results.is_empty() {
+        return Ok(());
+    }
+
+    let mut max_label_len = 0;
+    if results.len() == 1 {
+        max_label_len = max_label_len.max("Human".len());
+        max_label_len = max_label_len.max(results[0].chart_label.len());
+    } else {
+        for result in &results {
+            max_label_len = max_label_len.max(format!("human({})", result.chart_label).len());
+            max_label_len = max_label_len.max(result.chart_label.len());
+        }
+    }
+    let label_width = max_label_len.max(10);
+
+    println!("\nLife Progress:\n");
+    for (idx, result) in results.iter().enumerate() {
+        if results.len() == 1 {
+            show_lifespan_bars(
+                "Human",
+                result.human_age.min(HUMAN_MAX),
+                HUMAN_MAX,
+                args.no_color,
+                label_width,
             );
-            println!("Life Progress:\n");
-            show_lifespan_bars("Human", human_age.min(HUMAN_MAX), HUMAN_MAX, args.no_color);
-            show_lifespan_bars(&animal_lower, age.min(animal_max), animal_max, args.no_color);
+        } else {
+            let human_label = format!("human({})", result.chart_label);
+            show_lifespan_bars(
+                &human_label,
+                result.human_age.min(HUMAN_MAX),
+                HUMAN_MAX,
+                args.no_color,
+                label_width,
+            );
+        }
+
+        show_lifespan_bars(
+            &result.chart_label,
+            age.min(result.animal_max),
+            result.animal_max,
+            args.no_color,
+            label_width,
+        );
+
+        if idx + 1 < results.len() {
             println!();
         }
     }
+    println!();
+
     Ok(())
 }
 
 fn suggest_animal(input: &str) -> Option<String> {
     let animals = [
-        "small_dog", "medium_dog", "big_dog", "cat", "horse", "pig",
-        "parakeet", "snake", "goldfish", "rabbit", "hamster",
+        "small_dog", "medium_dog", "big_dog", "cat", "horse", "pig", "parakeet",
+        "snake", "goldfish", "rabbit", "hamster",
     ];
     animals
         .iter()
@@ -260,10 +330,12 @@ fn suggest_animal(input: &str) -> Option<String> {
 
 const HUMAN_MAX: f32 = 80.0;
 
-fn show_lifespan_bars(label: &str, age: f32, max: f32, no_color: bool) {
+fn show_lifespan_bars(label: &str, age: f32, max: f32, no_color: bool, label_width: usize) {
     let term = Term::stdout();
     let term_width = term.size().1 as usize;
-    let total_width = (term_width.saturating_sub(15)).min(50);
+    let gutter = label_width + 8;
+    let available_width = term_width.saturating_sub(gutter);
+    let total_width = available_width.min(50);
     let pct = age / max;
     let filled = (pct * total_width as f32) as usize;
     let empty = total_width - filled;
@@ -286,7 +358,7 @@ fn show_lifespan_bars(label: &str, age: f32, max: f32, no_color: bool) {
         if no_color { "" } else { color::RESET }
     );
 
-    println!("{:10} |{}| {:>3.0}%", label, bar, pct * 100.0);
+    println!("{:label_width$} |{}| {:>3.0}%", label, bar, pct * 100.0, label_width = label_width);
 }
 
 #[derive(Serialize)]

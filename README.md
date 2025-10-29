@@ -26,7 +26,7 @@ animal-age [OPTIONS] --type <ANIMAL>[,<ANIMAL>...] --age <YEARS>
 
 | Flag | Description |
 | --- | --- |
-| `-t`, `--type` | Animal type; use `--list` to view valid keys. Accepts comma-separated values. |
+| `-t`, `--type` | Animal type; use `--list` to view valid keys. Accepts comma-separated values or repeated flags. |
 | `-a`, `--age` | Real age in years (floating point). Must be non-negative. |
 | `--list` | Print supported animals and exit. |
 | `--json` | Emit JSON rows instead of bar charts. |
@@ -50,6 +50,12 @@ Compare multiple pets and export JSON:
 
 ```bash
 animal-age -t cat,small_dog -a 3 --json
+```
+
+Or repeat the `-t` flag to compare multiple animals at the same age:
+
+```bash
+animal-age -a 3 -t cat -t small_dog
 ```
 
 Sample JSON payload:
