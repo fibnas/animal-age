@@ -27,7 +27,12 @@ mod color {
 )]
 struct Args {
     /// Animal type (use --list to show valid options, supports comma-separated list)
-    #[arg(short = 't', long = "type", value_name = "ANIMAL", value_delimiter = ',')]
+    #[arg(
+        short = 't',
+        long = "type",
+        value_name = "ANIMAL",
+        value_delimiter = ','
+    )]
     animal: Option<Vec<String>>,
 
     /// Age of the animal in real years
@@ -140,16 +145,46 @@ impl Animal {
 
     fn human_years(&self, age: f32) -> f32 {
         match self {
-            Animal::SmallDog => if age <= 2.0 { age * 12.5 } else { 25.0 + (age - 2.0) * 4.5 },
-            Animal::MediumDog => if age <= 2.0 { age * 10.5 } else { 21.0 + (age - 2.0) * 5.0 },
-            Animal::BigDog => if age <= 2.0 { age * 9.0 } else { 18.0 + (age - 2.0) * 7.0 },
-            Animal::Cat => if age <= 2.0 { age * 12.5 } else { 25.0 + (age - 2.0) * 4.0 },
+            Animal::SmallDog => {
+                if age <= 2.0 {
+                    age * 12.5
+                } else {
+                    25.0 + (age - 2.0) * 4.5
+                }
+            }
+            Animal::MediumDog => {
+                if age <= 2.0 {
+                    age * 10.5
+                } else {
+                    21.0 + (age - 2.0) * 5.0
+                }
+            }
+            Animal::BigDog => {
+                if age <= 2.0 {
+                    age * 9.0
+                } else {
+                    18.0 + (age - 2.0) * 7.0
+                }
+            }
+            Animal::Cat => {
+                if age <= 2.0 {
+                    age * 12.5
+                } else {
+                    25.0 + (age - 2.0) * 4.0
+                }
+            }
             Animal::Horse => 6.5 + age * 4.0,
             Animal::Pig => age * 5.0,
             Animal::Parakeet => age * 5.0,
             Animal::Snake => age * 5.3,
             Animal::Goldfish => age * 5.0,
-            Animal::Rabbit => if age <= 2.0 { age * 12.0 } else { 24.0 + (age - 2.0) * 4.0 },
+            Animal::Rabbit => {
+                if age <= 2.0 {
+                    age * 12.0
+                } else {
+                    24.0 + (age - 2.0) * 4.0
+                }
+            }
             Animal::Hamster => age * 25.0,
         }
     }
@@ -164,7 +199,10 @@ fn main() {
                     animal, suggestion
                 );
             } else {
-                eprintln!("Unknown animal type: {}\nUse --list to view valid options.", animal);
+                eprintln!(
+                    "Unknown animal type: {}\nUse --list to view valid options.",
+                    animal
+                );
             }
         } else {
             eprintln!("Error: {}", err);
@@ -318,8 +356,17 @@ fn run_calc(animals: Vec<String>, age: f32, args: &Args) -> Result<(), AppError>
 
 fn suggest_animal(input: &str) -> Option<String> {
     let animals = [
-        "small_dog", "medium_dog", "big_dog", "cat", "horse", "pig", "parakeet",
-        "snake", "goldfish", "rabbit", "hamster",
+        "small_dog",
+        "medium_dog",
+        "big_dog",
+        "cat",
+        "horse",
+        "pig",
+        "parakeet",
+        "snake",
+        "goldfish",
+        "rabbit",
+        "hamster",
     ];
     animals
         .iter()
@@ -358,7 +405,13 @@ fn show_lifespan_bars(label: &str, age: f32, max: f32, no_color: bool, label_wid
         if no_color { "" } else { color::RESET }
     );
 
-    println!("{:label_width$} |{}| {:>3.0}%", label, bar, pct * 100.0, label_width = label_width);
+    println!(
+        "{:label_width$} |{}| {:>3.0}%",
+        label,
+        bar,
+        pct * 100.0,
+        label_width = label_width
+    );
 }
 
 #[derive(Serialize)]
