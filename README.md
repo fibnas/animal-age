@@ -2,7 +2,7 @@
 
 `animal-age` is a colorful Rust CLI that converts pet ages into their human-year equivalents, highlights lifespan progress, and outputs either terminal-friendly bars or machine-readable JSON.
 
-[![Crates.io](https://img.shields.io/crates/v/md-echo.svg)](https://crates.io/crates/animal-age)
+[![Crates.io](https://img.shields.io/crates/v/animal-age.svg)](https://crates.io/crates/animal-age)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Rust](https://img.shields.io/badge/Rust-stable-orange.svg)](https://www.rust-lang.org)
 
